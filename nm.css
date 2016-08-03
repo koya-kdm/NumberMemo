@@ -1,0 +1,29 @@
+table.t_layout {
+  border-collapse: collapse;
+  border: none;
+  width: 100%;
+}
+table.t_layout td {
+  border: none;
+  margin: 0 0 0 0;
+  padding: 10px 10px 10px 10px;
+}
+
+table.t_list {
+  border-collapse: collapse;
+  border: solid #dddddd 1px;
+  width: 100%;
+  margin-top: 10px;
+}
+table.t_list th, td{
+  border: solid #dddddd 1px;
+}
+
+table.t_switch {
+  border-collapse: collapse;
+  border: none;
+  margin-top: 5px;
+}
+table.t_switch th, td{
+  border: none;
+}
