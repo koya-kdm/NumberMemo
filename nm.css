@@ -11,12 +11,16 @@ table.t_layout td {
 
 table.t_list {
   border-collapse: collapse;
-  border: solid #dddddd 1px;
+  border: solid #dddddd 2px;
   width: 100%;
-  margin-top: 10px;
+  margin-top: 5px;
 }
-table.t_list th, td{
-  border: solid #dddddd 1px;
+table.t_list th,
+table.t_list td {
+  border-width: 1px 0px;
+  border-style: solid;
+  border-color: #dddddd;
+  padding: 5px 5px 5px 5px;
 }
 
 table.t_switch {
@@ -24,6 +28,15 @@ table.t_switch {
   border: none;
   margin-top: 5px;
 }
-table.t_switch th, td{
+table.t_switch td{
   border: none;
 }
+
+a {
+  color: rgba(24,103,194,0.81);
+}
+
+a:link    { color: rgba(24,103,194,0.81); text-decoration: none;}
+a:visited { color: rgba(24,103,194,0.81); }
+a:hover   { color: rgba(24,103,194,0.81); }
+a:active  { opacity: 0.2; }
