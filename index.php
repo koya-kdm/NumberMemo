@@ -11,7 +11,7 @@
 
 <link href="./nm.css" rel="stylesheet"/>
 <script src='./nm.js'></script>
-
+<script src='./sample.js'></script>
 
 
 <!-- *************************
@@ -145,14 +145,121 @@
     <br>
     <br>
     <br>
+
+    <div width="100%" align="center">
+      <button class="button button--outline" onclick="addSample()">サンプルデータの取込み</button>
+    </div>
+    <br>
     <div width="100%" align="center">
       <button class="button button--outline" onclick="deleteAll()">すべて削除</button>
     </div>
+
     <br>
+
   </ons-navigator>
 </ons-template>
 
-<ons-template id="detail.html">
+
+<!-- *************************
+* 「人・もの」タブ
+******************************-->
+<ons-template id="tab_thing.html">
+  <ons-navigator var="nav">
+    <!-- ****** 入力フォーム ******-->
+    <table class="t_layout" style="margin-top:10px;">
+      <tr>
+        <td nowrap>名称&nbsp;&nbsp;</td>
+        <td>
+          <input type="text" id="in_title" class="text-input--underbar" style="width:100%;" placeholder="" value="">
+        </td>
+      </tr>
+      <tr>
+        <td>値</td>
+        <td>
+          <input type="number" id="in_value" class="text-input--underbar" style="width:100%;" placeholder="" value="">
+        </td>
+      </tr>
+      <tr>
+        <td></td>
+        <td>
+          <div class="button-bar" style="width:280px;margin:0px auto 10px;">
+            <div class="button-bar__item">
+              <input type="radio" id="in_subunit_cho" name="segment-a">
+              <button class="button-bar__button">兆 (^12)</button>
+            </div>
+            <div class="button-bar__item">
+              <input type="radio" id="in_subunit_oku" name="segment-a">
+              <button class="button-bar__button">億 (^8)</button>
+            </div>
+            <div class="button-bar__item">
+              <input type="radio" id="in_subunit_man" name="segment-a">
+              <button class="button-bar__button">万 (^4)</button>
+            </div>
+          </div>
+          <div class="button-bar" style="width:280px;margin:0px auto;">
+            <div class="button-bar__item">
+              <input type="radio" id="in_subunit_tri" name="segment-a">
+              <button class="button-bar__button">Trillion (^12)</button>
+            </div>
+            <div class="button-bar__item">
+              <input type="radio" id="in_subunit_bil" name="segment-a">
+              <button class="button-bar__button">Billion (^9)</button>
+            </div>
+            <div class="button-bar__item">
+              <input type="radio" id="in_subunit_mil" name="segment-a">
+              <button class="button-bar__button">Million (^6)</button>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" align="center">
+          <button class="button button--outline" onclick="refer()">　　照会　　</button>
+          <button class="button button--outline" onclick="setDefaultInputs()">クリア</button>
+        </td>
+      </tr>
+    </table>
+
+    <!-- ****** オプション ******-->
+    <div width="100%" align="right">
+      <table class="t_switch">
+        <tr>
+          <td>TBM</td>
+          <td>
+            <label class="switch">
+              <input type="checkbox" class="switch__input" id="op_toTbl" onchange="displayNmlist()">
+              <div class="switch__toggle"></div>
+            </label>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- ****** 一覧 ******-->
+    <table class="t_list" id="nmlist"></table>
+
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+
+    <div width="100%" align="center">
+      <button class="button button--outline" onclick="addSample()">サンプルデータの取込み</button>
+    </div>
+    <br>
+    <div width="100%" align="center">
+      <button class="button button--outline" onclick="deleteAll()">すべて削除</button>
+    </div>
+
+    <br>
+
+  </ons-navigator>
+</ons-template>
+
+
+
+<ons-template id="detail_money.html">
   <ons-page>
     <ons-toolbar>
       <div class="left">
@@ -195,100 +302,79 @@
   </ons-page>
 </ons-template>
 
-<!-- *************************
-* 「人・もの」タブ
-******************************-->
-<ons-template id="tab_thing.html">
 
-  <!-- ****** 入力フォーム ******-->
-  <table class="t_layout" style="margin-top:10px;">
-    <tr>
-      <td nowrap>名称&nbsp;&nbsp;</td>
-      <td>
-        <input type="text" id="in_title" class="text-input--underbar" style="width:100%;" placeholder="" value="">
-      </td>
-    </tr>
-    <tr>
-      <td>値</td>
-      <td>
-        <input type="number" id="in_value" class="text-input--underbar" style="width:100%;" placeholder="" value="">
-      </td>
-    </tr>
-    <tr>
-      <td></td>
-      <td>
-        <div class="button-bar" style="width:280px;margin:0px auto 10px;">
-          <div class="button-bar__item">
-            <input type="radio" id="in_subunit_cho" name="segment-a">
-            <button class="button-bar__button">兆 (^12)</button>
-          </div>
-          <div class="button-bar__item">
-            <input type="radio" id="in_subunit_oku" name="segment-a">
-            <button class="button-bar__button">億 (^8)</button>
-          </div>
-          <div class="button-bar__item">
-            <input type="radio" id="in_subunit_man" name="segment-a">
-            <button class="button-bar__button">万 (^4)</button>
-          </div>
-        </div>
-        <div class="button-bar" style="width:280px;margin:0px auto;">
-          <div class="button-bar__item">
-            <input type="radio" id="in_subunit_tri" name="segment-a">
-            <button class="button-bar__button">Trillion (^12)</button>
-          </div>
-          <div class="button-bar__item">
-            <input type="radio" id="in_subunit_bil" name="segment-a">
-            <button class="button-bar__button">Billion (^9)</button>
-          </div>
-          <div class="button-bar__item">
-            <input type="radio" id="in_subunit_mil" name="segment-a">
-            <button class="button-bar__button">Million (^6)</button>
-          </div>
-        </div>
-      </td>
-    </tr>
-    <tr>
-      <td colspan="2" align="center">
-        <button class="button button--outline" onclick="refer()">　　照会　　</button>
-        <button class="button button--outline" onclick="setDefaultInputs()">クリア</button>
-      </td>
-    </tr>
-  </table>
+<ons-template id="detail_thing.html">
+  <ons-page>
+    <ons-toolbar>
+      <div class="left">
+        <ons-back-button>戻る</ons-back-button>
+      </div>
+      <div class="center" id="detail_title"></div>
+    </ons-toolbar>
 
-  <!-- ****** オプション ******-->
-  <div width="100%" align="right">
-    <table class="t_switch">
+    <br>
+    <br>
+
+    <table class="t_list" id="nmlist">
       <tr>
-        <td>TBM</td>
-        <td>
-          <label class="switch">
-            <input type="checkbox" class="switch__input" id="op_toTbl" onchange="displayNmlist()">
-            <div class="switch__toggle"></div>
-          </label>
-        </td>
+        <td>値</td>
+        <td id="detail_value" align="right"></td>
+      </tr>
+      <tr>
+        <td>登録日</td>
+        <td id="detail_date" align="right"></td>
+      </tr>
+      <tr>
+        <td>更新日</td>
+        <td id="detail_date" align="right"></td>
       </tr>
     </table>
-  </div>
 
-  <!-- ****** 一覧 ******-->
-  <table class="t_list" id="nmlist"></table>
-
-  <br>
-  <br>
-  <br>
-  <br>
-  <br>
-  <div width="100%" align="center">
-    <button class="button button--outline" onclick="deleteAll()">すべて削除</button>
-  </div>
-  <br>
+    <div style="text-align: center; margin-top: 100px;">
+      <ons-button modifier="light" onclick="nav.popPage()">戻る</ons-button>
+      <ons-button modifier="light" onclick="nav.popPage()">更新</ons-button>
+      <ons-button modifier="light" onclick="nav.popPage()">削除</ons-button>
+    </div>
+  </ons-page>
 </ons-template>
 
+
 <!-- *************************
-* 「人・もの」タブ
+* 「設定」タブ
 ******************************-->
 <ons-template id="tab_config.html">
-  <div>
-    いま作ってるとこ。
-  </div>
+  <ons-navigator title="Navigator" var="nav">
+    <ons-page>
+      <ons-toolbar>
+        <div class="center">設定</div>
+      </ons-toolbar>
+
+      <ons-list>
+        <ons-list-header>マネー</ons-list-header>
+
+        <ons-list-item>
+          <div style="float: left;">
+              <span style="color: #666">数字メモをすべて削除</span></ons-col>
+          </div>
+
+          <div style="float: right;">
+            <ons-button modifier="quiet" onclick="deleteAll_money()">実行</ons-button>
+          </div>
+        </ons-list-item>
+
+        <ons-list-header>人・もの</ons-list-header>
+
+        <ons-list-item>
+          <div style="float: left;">
+              <span style="color: #666">数字メモをすべて削除</span></ons-col>
+          </div>
+
+          <div style="float: right;">
+            <ons-button modifier="quiet" onclick="deleteAll_thing()">実行</ons-button>
+          </div>
+        </ons-list-item>
+
+      </ons-list>
+    </ons-page>
+  </ons-navigator>
 </ons-template>

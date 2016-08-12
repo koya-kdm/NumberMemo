@@ -139,43 +139,46 @@ function sortNmlist()
 }
 
 /*--------------------------------------
-  saveLocalStrage
+  saveLocalStorage
 ---------------------------------------*/
-function saveLocalStrage()
+function saveLocalStorage()
+{
+  if (tab.getActiveTabIndex() == TAB_MONEY) { saveLocalStorage_money(); }
+  if (tab.getActiveTabIndex() == TAB_THING) { saveLocalStorage_thing(); }
+}
+function saveLocalStorage_money()
 {
   var newNmlist = [];
-  var tmpNmlist = []; // 照会だけしててまだ登録指示を受けていないもの
 
-  // _マネー
-  if (tab.getActiveTabIndex() == TAB_MONEY)
+  for (var i = 0; i < gNmlist1.length; i++)
   {
-    for (var i = 0; i < gNmlist1.length; i++)
-    {
-      if (gNmlist1[i].isEntered == true) {
-        ;
-      }
-      else {
-        newNmlist.push(gNmlist1[i]);
-      }
+    if (gNmlist1[i].isEntered == true) {
+      ;
     }
-    localStorage.removeItem("nmlist1");
-    localStorage.setItem("nmlist1", JSON.stringify(newNmlist));
+    else {
+      newNmlist.push(gNmlist1[i]);
+    }
   }
-  // _人・もの
-  if (tab.getActiveTabIndex() == TAB_THING)
+  localStorage.removeItem("nmlist1");
+  localStorage.setItem("nmlist1", JSON.stringify(newNmlist));
+
+  alert("保存しました。");
+}
+function saveLocalStorage_thing()
+{
+  var newNmlist = [];
+
+  for (var i = 0; i < gNmlist2.length; i++)
   {
-    for (var i = 0; i < gNmlist2.length; i++)
-    {
-      if (gNmlist2[i].isEntered == true) {
-        ;
-      }
-      else {
-        newNmlist.push(gNmlist2[i]);
-      }
+    if (gNmlist2[i].isEntered == true) {
+      ;
     }
-    localStorage.removeItem("nmlist2");
-    localStorage.setItem("nmlist2", JSON.stringify(newNmlist));
+    else {
+      newNmlist.push(gNmlist2[i]);
+    }
   }
+  localStorage.removeItem("nmlist2");
+  localStorage.setItem("nmlist2", JSON.stringify(newNmlist));
 
   alert("保存しました。");
 }
@@ -208,29 +211,8 @@ function displayNmlist_money()
     var cell3 = row.insertCell(-1); // button
 
     // セルの内容入力
-    /*var options = {
-      animation: 'slide',
-      onTransitionEnd: function() {document.getElementById('detail_title').innerHTML = 'test';}
-    };*/
-    var options = {
-      animation : 'slide'
-    };
-    //cell1.innerHTML = '<a href="#" onclick="myNavigator.pushPage(\'detail.html\', ' + options + ')"> ' + gNmlist1[i].title + '</a>';
-    //cell1.innerHTML = '<a href="#" onclick="nav.pushPage(\'detail.html\', {animation : \'slide\', myTitle : \'test\'})"> ' + gNmlist1[i].title + '</a>';
-    //cell1.innerHTML = '<a href="#" onclick="nav.pushPage(\'detail.html\', {animation : \'slide\'})"> ' + gNmlist1[i].title + '</a>';
-    //cell1.innerHTML = '<a href="#" onclick="nav.pushPage(\'detail.html\', {animation : \'slide\'});document.getElementById(\'detail_title\').innerHTML=\'test\';"> ' + gNmlist1[i].title + '</a>';
-    /*
     cell1.innerHTML
-    = '<a href="#" onclick="nav.pushPage(\'detail.html\', {animation : \'slide\', onTransitionEnd: function() '
-    + '{'
-    +    'document.getElementById(\'detail_title\').innerHTML=\'' + gNmlist1[i].title + '\';'
-    +    'document.getElementById(\'detail_value_jpy\').innerHTML=\'' + gNmlist1[i].value_jpy + '\';'
-    +    'document.getElementById(\'detail_value_usd\').innerHTML=\'' + gNmlist1[i].value_usd + '\';'
-    +    'document.getElementById(\'detail_rate\').innerHTML=\'' + gNmlist1[i].rate      + '\';'
-    + '}})"> ' + gNmlist1[i].title + '</a>';
-    */
-    cell1.innerHTML
-    = '<a href="#" onclick="nav.pushPage(\'detail.html\', {animation : \'slide\', onTransitionEnd: function() '
+    = '<a href="#" onclick="nav.pushPage(\'detail_money.html\', {animation : \'slide\', onTransitionEnd: function() '
     + '{'
     +    'displayDetail(' + i + ');'
     + '}})"> ' + gNmlist1[i].title + '</a>';
@@ -285,7 +267,12 @@ function displayNmlist_thing()
     var cell3 = row.insertCell(-1); // button
 
     // セルの内容入力
-    cell1.innerHTML = gNmlist2[i].title;
+    cell1.innerHTML
+    = '<a href="#" onclick="nav.pushPage(\'detail_thing.html\', {animation : \'slide\', onTransitionEnd: function() '
+    + '{'
+    +    'displayDetail(' + i + ');'
+    + '}})"> ' + gNmlist2[i].title + '</a>';
+
     cell2.innerHTML = getShort(gNmlist2[i].value);
 
     if (gNmlist2[i].isEntered == true)
@@ -311,16 +298,28 @@ function displayNmlist_thing()
   }
 }
 
-
+/*--------------------------------------
+  displayDetail
+---------------------------------------*/
 function displayDetail(i)
+{
+  if (tab.getActiveTabIndex() == TAB_MONEY) { displayDetail_money(i); }
+  if (tab.getActiveTabIndex() == TAB_THING) { displayDetail_thing(i); }
+}
+function displayDetail_money(i)
 {
   document.getElementById('detail_title'    ).innerHTML = gNmlist1[i].title;
   document.getElementById('detail_value_jpy').innerHTML = getShort(gNmlist1[i].value_jpy) + '円';
   document.getElementById('detail_value_usd').innerHTML = getShort(gNmlist1[i].value_usd) + 'ドル';
   document.getElementById('detail_rate'     ).innerHTML = gNmlist1[i].rate + '円/ドル';
-  document.getElementById('detail_date'     ).innerHTML = gNmlist1[i].date;
+  document.getElementById('detail_date'     ).innerHTML = gNmlist1[i].reg_date.toLocaleString();
 }
-
+function displayDetail_thing(i)
+{
+  document.getElementById('detail_title').innerHTML = gNmlist2[i].title;
+  document.getElementById('detail_value').innerHTML = getShort(gNmlist2[i].value);
+  document.getElementById('detail_date' ).innerHTML = gNmlist2[i].reg_date.toLocaleString();
+}
 
 /*--------------------------------------
   getShort
@@ -381,6 +380,7 @@ function refer_money()
     "value_jpy": 0,
     "value_usd": 0,
     "rate"     : document.getElementById('in_rate').value,
+    "reg_date" : new Date(),
     "isEntered": true
   }
 
@@ -419,6 +419,7 @@ function refer_thing()
   var entry = {
     "title"    : document.getElementById('in_title').value,
     "value"    : multiplyBySubunit(document.getElementById('in_value').value),
+    "reg_date" : new Date(),
     "isEntered": true
   }
 
@@ -440,11 +441,16 @@ function refer_thing()
 ---------------------------------------*/
 function multiplyBySubunit(value)
 {
+  // _マネー
+  if (tab.getActiveTabIndex() == TAB_MONEY)
+  {
+    if      (document.getElementById('in_subunit_han').checked) { return value *     1000000; }
+    else if (document.getElementById('in_subunit_sen').checked) { return value *        1000; }
+  }
+
   if      (document.getElementById('in_subunit_cho').checked) { return value * 1000000000000; }
   else if (document.getElementById('in_subunit_oku').checked) { return value *     100000000; }
-  else if (document.getElementById('in_subunit_han').checked) { return value *       1000000; }
   else if (document.getElementById('in_subunit_man').checked) { return value *         10000; }
-  else if (document.getElementById('in_subunit_sen').checked) { return value *          1000; }
   else if (document.getElementById('in_subunit_tri').checked) { return value * 1000000000000; }
   else if (document.getElementById('in_subunit_bil').checked) { return value *    1000000000; }
   else if (document.getElementById('in_subunit_mil').checked) { return value *       1000000; }
@@ -474,7 +480,7 @@ function deleteNm(key)
   }
 
   // ストレージ保存
-  saveLocalStrage();
+  saveLocalStorage();
 
   // テーブル更新
   displayNmlist();
@@ -539,7 +545,7 @@ function addNm(key)
   }
 
   // ストレージ保存
-  saveLocalStrage();
+  saveLocalStorage();
 
   // 一時ナンバーリストを戻す
   for (var i = 0; i < tmpNmlist.length; i++)
@@ -578,25 +584,32 @@ function saveRate()
 ---------------------------------------*/
 function deleteAll()
 {
+  if (tab.getActiveTabIndex() == TAB_MONEY) { deleteAll_money(); }
+  if (tab.getActiveTabIndex() == TAB_THING) { deleteAll_thing(); }
+}
+function deleteAll_money()
+{
   //  確認
   if (false == confirm('本当に削除しますか？')) {
     return;
   }
 
   // 削除
-  // _マネー
-  if (tab.getActiveTabIndex() == TAB_MONEY)
-  {
-    localstorage.removeItem('nmlist1');
-  }
-  // _人・もの
-  if (tab.getActiveTabIndex() == TAB_THING)
-  {
-    localstorage.removeItem('nmlist2');
+  localStorage.removeItem('nmlist1');
+
+  saveLocalStorage_money();
+}
+function deleteAll_thing()
+{
+  //  確認
+  if (false == confirm('本当に削除しますか？')) {
+    return;
   }
 
-  // テーブル更新
-  displayNmlist();
+  // 削除
+  localStorage.removeItem('nmlist2');
+
+  saveLocalStorage_thing();
 }
 
 /*--------------------------------------
@@ -612,6 +625,66 @@ function pr(obj)
   alert(properties);
 }
 
+/*--------------------------------------
+  addSample
+---------------------------------------*/
+function addSample()
+{
+  if (tab.getActiveTabIndex() == TAB_MONEY) { addSample_money(); }
+  if (tab.getActiveTabIndex() == TAB_THING) { addSample_thing(); }
+}
+function addSample_money()
+{
+  for (var i = 0; i < gSamples1.length; i++)
+  {
+    var isExisting = false;
+
+    for (var j = 0; j < gNmlist1.length; j++)
+    {
+      if (gNmlist1[j].title == gSamples1[i].title)
+      {
+        gNmlist1[j] = gSamples1[i];
+        isExisting = true;
+        break;
+      }
+    }
+
+    if (false == isExisting)
+    {
+      gNmlist1.push(gSamples1[i]);
+    }
+  }
+
+  sortNmlist();
+  saveLocalStorage();
+  displayNmlist();
+}
+function addSample_thing()
+{
+  for (var i = 0; i < gSamples2.length; i++)
+  {
+    var isExisting = false;
+
+    for (var j = 0; j < gNmlist2.length; j++)
+    {
+      if (gNmlist2[j].title == gSamples2[i].title)
+      {
+        gNmlist2[j] = gSamples2[i];
+        isExisting = true;
+        break;
+      }
+    }
+
+    if (false == isExisting)
+    {
+      gNmlist2.push(gSamples2[i]);
+    }
+  }
+
+  sortNmlist();
+  saveLocalStorage();
+  displayNmlist();
+}
 
 /*--------------------------------------
   addSampleNmlist1ToLocalStorage
@@ -624,84 +697,11 @@ function saveSampleNmlist()
 }
 function saveSampleNmlist_money()
 {
-  var obj =
-  [
-    {
-      "title"    : "日本GDP",
-      "value_jpy": 441200000000000,
-      "value_usd": 4412000000000,
-      "rate"     : 100,
-      "date"     : "20160730"
-    },
-    {
-      "title"    : "米国GDP",
-      "value_jpy": 1855800000000000,
-      "value_usd": 18558000000000,
-      "rate"     : 100,
-      "date"     : "20160730"
-    },
-    {
-      "title"    : "中国GDP",
-      "value_jpy": 1138300000000000,
-      "value_usd": 11383000000000,
-      "rate"     : 100,
-      "date"     : "20160730"
-    },
-    {
-      "title"    : "世界GDP",
-      "value_jpy": 7200000000000000,
-      "value_usd": 72000000000000,
-      "rate"     : 100,
-      "date"     : "20160730"
-    },
-    {
-      "title"    : "日本国家予算（一般会計予算）",
-      "value_jpy": 97000000000000,
-      "value_usd": 970000000000,
-      "rate"     : 100,
-      "date"     : "20160730"
-    }
-  ];
-
-  var str = JSON.stringify(obj);
+  var str = JSON.stringify(gSamples1);
   localStorage.setItem('nmlist1', str);
 }
 function saveSampleNmlist_thing()
 {
-  var obj =
-  [
-    {
-      "title"    : "日本の人口",
-      "value"    : 126600000,
-      "date"     : "20160730"
-    },
-    {
-      "title"    : "日本の労働力人口",
-      "value"    : 65480000,
-      "date"     : "20160730"
-    },
-    {
-      "title"    : "世界の人口",
-      "value"    : 7200000000,
-      "date"     : "20160730"
-    },
-    {
-      "title"    : "中国の人口",
-      "value"    : 1376000000,
-      "date"     : "20160730"
-    },
-    {
-      "title"    : "インドの人口",
-      "value"    : 1311000000,
-      "date"     : "20160730"
-    },
-    {
-      "title"    : "米国の人口",
-      "value"    : 320000000,
-      "date"     : "20160730"
-    }
-  ];
-
-  var str = JSON.stringify(obj);
+  var str = JSON.stringify(gSamples2);
   localStorage.setItem('nmlist2', str);
 }
