@@ -121,8 +121,8 @@ function sortNmlist()
   if (tab.getActiveTabIndex() == TAB_MONEY)
   {
     gNmlist1.sort(function(a, b) {
-      if (a.value_jpy < b.value_jpy) return -1;
-      if (a.value_jpy > b.value_jpy) return  1;
+      if (a.value < b.value) return -1;
+      if (a.value > b.value) return  1;
       return 0;
     });
   }
@@ -207,7 +207,7 @@ function displayNmlist_money()
 
     // セルの挿入
     var cell1 = row.insertCell(-1); // title
-    var cell2 = row.insertCell(-1); // value_jpy
+    var cell2 = row.insertCell(-1); // value
     var cell3 = row.insertCell(-1); // button
 
     // セルの内容入力
@@ -218,10 +218,10 @@ function displayNmlist_money()
     + '}})"> ' + gNmlist1[i].title + '</a>';
 
     if (document.getElementById('op_toDollar').checked) {
-      cell2.innerHTML = getShort(gNmlist1[i].value_usd) + 'ドル';
+      cell2.innerHTML = getShort(gNmlist1[i].value / gNmlist1[i].rate) + 'ドル';
     }
     else {
-      cell2.innerHTML = getShort(gNmlist1[i].value_jpy) + '円';
+      cell2.innerHTML = getShort(gNmlist1[i].value) + '円';
     }
 
     if (gNmlist1[i].isEntered == true)
@@ -309,16 +309,18 @@ function displayDetail(i)
 function displayDetail_money(i)
 {
   document.getElementById('detail_title'    ).innerHTML = gNmlist1[i].title;
-  document.getElementById('detail_value_jpy').innerHTML = getShort(gNmlist1[i].value_jpy) + '円';
-  document.getElementById('detail_value_usd').innerHTML = getShort(gNmlist1[i].value_usd) + 'ドル';
+  document.getElementById('detail_value_jpy').innerHTML = getShort(gNmlist1[i].value) + '円';
+  document.getElementById('detail_value_usd').innerHTML = getShort(gNmlist1[i].value / gNmlist1[i].rate) + 'ドル';
   document.getElementById('detail_rate'     ).innerHTML = gNmlist1[i].rate + '円/ドル';
-  document.getElementById('detail_date'     ).innerHTML = gNmlist1[i].reg_date.toLocaleString();
+  document.getElementById('detail_reg_date' ).innerHTML = gNmlist1[i].reg_date.toLocaleString();
+  document.getElementById('detail_upd_date' ).innerHTML = gNmlist1[i].upd_date.toLocaleString();
 }
 function displayDetail_thing(i)
 {
-  document.getElementById('detail_title').innerHTML = gNmlist2[i].title;
-  document.getElementById('detail_value').innerHTML = getShort(gNmlist2[i].value);
-  document.getElementById('detail_date' ).innerHTML = gNmlist2[i].reg_date.toLocaleString();
+  document.getElementById('detail_title'    ).innerHTML = gNmlist2[i].title;
+  document.getElementById('detail_value'    ).innerHTML = getShort(gNmlist2[i].value);
+  document.getElementById('detail_reg_date' ).innerHTML = gNmlist2[i].reg_date.toLocaleString();
+  document.getElementById('detail_upd_date' ).innerHTML = gNmlist2[i].upd_date.toLocaleString();
 }
 
 /*--------------------------------------
@@ -377,23 +379,21 @@ function refer_money()
 
   var entry = {
     "title"    : document.getElementById('in_title').value,
-    "value_jpy": 0,
-    "value_usd": 0,
+    "value"    : 0,
     "rate"     : document.getElementById('in_rate').value,
     "reg_date" : new Date(),
+    "upd_date" : new Date(),
     "isEntered": true
   }
 
   var value = multiplyBySubunit(document.getElementById('in_value').value);
   if (document.getElementById('in_unit_jpy').checked)
   {
-    entry.value_jpy = value;
-    entry.value_usd = value / entry.rate;
+    entry.value = value;
   }
   else if (document.getElementById('in_unit_usd').checked)
   {
-    entry.value_jpy = value * entry.rate;
-    entry.value_usd = value;
+    entry.value = value * entry.rate;
   }
 
   // 配列更新
@@ -420,6 +420,7 @@ function refer_thing()
     "title"    : document.getElementById('in_title').value,
     "value"    : multiplyBySubunit(document.getElementById('in_value').value),
     "reg_date" : new Date(),
+    "upd_date" : new Date(),
     "isEntered": true
   }
 
