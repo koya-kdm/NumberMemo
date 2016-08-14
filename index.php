@@ -1,7 +1,10 @@
+<!DOCTYPE html>
 <meta charset="UTF-8" />
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="format-detection" content="telephone=no" />
+
 
 <link href="https://cdn.rawgit.com/OnsenUI/OnsenUI/1.3.6/build/css/onsenui.css" rel="stylesheet"/>
 <link href="https://cdn.rawgit.com/OnsenUI/OnsenUI/1.3.6/build/css/onsen-css-components.css" rel="stylesheet"/>
@@ -258,20 +261,26 @@
 </ons-template>
 
 
-
+<!-- *************************
+* 「マネー」詳細
+******************************-->
 <ons-template id="detail_money.html">
   <ons-page>
     <ons-toolbar>
       <div class="left">
         <ons-back-button>戻る</ons-back-button>
       </div>
-      <div class="center" id="detail_title"></div>
+      <div class="center">詳細</div>
     </ons-toolbar>
 
     <br>
     <br>
 
     <table class="t_list" id="nmlist">
+      <tr>
+        <td>名称</td>
+        <td id="detail_title" align="right"></td>
+      </tr>
       <tr>
         <td>金額（円）</td>
         <td id="detail_value_jpy" align="right"></td>
@@ -286,23 +295,126 @@
       </tr>
       <tr>
         <td>登録日</td>
-        <td id="detail_date" align="right"></td>
+        <td id="detail_reg_date" align="right"></td>
       </tr>
       <tr>
         <td>更新日</td>
-        <td id="detail_date" align="right"></td>
+        <td id="detail_upd_date" align="right"></td>
+      </tr>
+      <tr>
+        <td>ノート</td>
+        <td id="detail_note" align="right"></td>
       </tr>
     </table>
 
-    <div style="text-align: center; margin-top: 100px;">
-      <ons-button modifier="light" onclick="nav.popPage()">戻る</ons-button>
-      <ons-button modifier="light" onclick="nav.popPage()">更新</ons-button>
-      <ons-button modifier="light" onclick="nav.popPage()">削除</ons-button>
-    </div>
+    <div id="detail_buttons" style="text-align: center; margin-top: 20px; margin-bottom: 100px;"></div>
+
   </ons-page>
 </ons-template>
 
+<ons-template id="edit_money.html">
+  <ons-page>
+    <ons-toolbar>
+      <div class="left">
+        <ons-back-button>戻る</ons-back-button>
+      </div>
+      <div class="center" id="detail_title">編集</div>
+    </ons-toolbar>
 
+    <!-- ****** 入力フォーム ******-->
+    <table class="t_layout" style="margin-top:10px;">
+      <tr>
+        <td nowrap>名称&nbsp;&nbsp;</td>
+        <td>
+          <input type="text" id="edit_title" class="text-input--underbar" style="width:100%;">
+        </td>
+      </tr>
+      <tr>
+        <td>金額</td>
+        <td>
+          <input type="number" id="edit_value" class="text-input--underbar" style="width:100%;">
+        </td>
+      </tr>
+      <tr>
+        <td></td>
+        <td>
+          <div class="button-bar" style="width:280px;margin:0px auto 10px;">
+            <div class="button-bar__item">
+              <input type="radio" id="edit_subunit_cho" name="segment-a">
+              <button class="button-bar__button">兆 (^12)</button>
+            </div>
+            <div class="button-bar__item">
+              <input type="radio" id="edit_subunit_oku" name="segment-a">
+              <button class="button-bar__button">億 (^8)</button>
+            </div>
+          </div>
+          <div class="button-bar" style="width:280px;margin:0px auto 10px;">
+            <div class="button-bar__item">
+              <input type="radio" id="edit_subunit_han" name="segment-a">
+              <button class="button-bar__button">百万 (^6)</button>
+            </div>
+            <div class="button-bar__item">
+              <input type="radio" id="edit_subunit_man" name="segment-a">
+              <button class="button-bar__button">万 (^4)</button>
+            </div>
+            <div class="button-bar__item">
+              <input type="radio" id="edit_subunit_sen" name="segment-a">
+              <button class="button-bar__button">千 (^3)</button>
+            </div>
+          </div>
+          <div class="button-bar" style="width:280px;margin:0px auto;">
+            <div class="button-bar__item">
+              <input type="radio" id="edit_subunit_tri" name="segment-a">
+              <button class="button-bar__button">Trillion (^12)</button>
+            </div>
+            <div class="button-bar__item">
+              <input type="radio" id="edit_subunit_bil" name="segment-a">
+              <button class="button-bar__button">Billion (^9)</button>
+            </div>
+            <div class="button-bar__item">
+              <input type="radio" id="edit_subunit_mil" name="segment-a">
+              <button class="button-bar__button">Million (^6)</button>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td>単位</td>
+        <td>
+          <div class="button-bar" style="width:280px;margin:0 auto;">
+            <div class="button-bar__item">
+              <input type="radio" id="edit_unit_jpy" name="segment-b">
+              <button class="button-bar__button">円</button>
+            </div>
+            <div class="button-bar__item">
+              <input type="radio" id="edit_unit_usd" name="segment-b">
+              <button class="button-bar__button">ドル</button>
+            </div>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td>為替</td>
+        <td>
+          <input type="number" id="edit_rate" class="text-input--underbar" style="width:50pt;"><span style="color:#999999">円/ドル</span>
+        </td>
+      </tr>
+      <tr>
+        <td>ノート</td>
+        <td>
+          <textarea class="textarea" id="edit_note"></textarea>
+        </td>
+      </tr>
+    </table>
+
+    <div id="edit_buttons" style="text-align: center; margin-top: 20px; margin-bottom: 100px;"></div>
+
+  </ons-page>
+</ons-template>
+
+<!-- *************************
+* 「人・もの」詳細
+******************************-->
 <ons-template id="detail_thing.html">
   <ons-page>
     <ons-toolbar>
@@ -322,11 +434,11 @@
       </tr>
       <tr>
         <td>登録日</td>
-        <td id="detail_date" align="right"></td>
+        <td id="detail_reg_date" align="right"></td>
       </tr>
       <tr>
         <td>更新日</td>
-        <td id="detail_date" align="right"></td>
+        <td id="detail_upd_date" align="right"></td>
       </tr>
     </table>
 
@@ -354,7 +466,7 @@
 
         <ons-list-item>
           <div style="float: left;">
-              <span style="color: #666">数字メモをすべて削除</span></ons-col>
+              <span style="color: #666">数字メモをすべて削除</span>
           </div>
 
           <div style="float: right;">
@@ -366,7 +478,7 @@
 
         <ons-list-item>
           <div style="float: left;">
-              <span style="color: #666">数字メモをすべて削除</span></ons-col>
+              <span style="color: #666">数字メモをすべて削除</span>
           </div>
 
           <div style="float: right;">

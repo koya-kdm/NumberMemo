@@ -202,6 +202,13 @@ function displayNmlist_money()
 
   for (var i = 0; i < gNmlist1.length; i++)
   {
+
+    if (gNmlist1[i].value == undefined || gNmlist1[i].value == 0 || gNmlist1[i].value == null)
+    {
+      gNmlist1[i].value = gNmlist1[i].value_jpy;
+    }
+
+
     // 行の追加
     var row = table.insertRow(-1);
 
@@ -308,19 +315,96 @@ function displayDetail(i)
 }
 function displayDetail_money(i)
 {
-  document.getElementById('detail_title'    ).innerHTML = gNmlist1[i].title;
-  document.getElementById('detail_value_jpy').innerHTML = getShort(gNmlist1[i].value) + '円';
-  document.getElementById('detail_value_usd').innerHTML = getShort(gNmlist1[i].value / gNmlist1[i].rate) + 'ドル';
-  document.getElementById('detail_rate'     ).innerHTML = gNmlist1[i].rate + '円/ドル';
-  document.getElementById('detail_reg_date' ).innerHTML = gNmlist1[i].reg_date.toLocaleString();
-  document.getElementById('detail_upd_date' ).innerHTML = gNmlist1[i].upd_date.toLocaleString();
+  try {
+    document.getElementById('detail_title'    ).innerHTML = gNmlist1[i].title;
+    document.getElementById('detail_value_jpy').innerHTML = getShort(gNmlist1[i].value) + '円';
+    document.getElementById('detail_value_usd').innerHTML = getShort(gNmlist1[i].value / gNmlist1[i].rate) + 'ドル';
+    document.getElementById('detail_rate'     ).innerHTML = gNmlist1[i].rate + '円/ドル';
+    document.getElementById('detail_note'     ).innerHTML = gNmlist1[i].note;
+    document.getElementById('detail_reg_date' ).innerHTML = getDateString(gNmlist1[i].reg_date);
+    document.getElementById('detail_upd_date' ).innerHTML = getDateString(gNmlist1[i].upd_date);
+  } catch (e) {
+    ;
+  } finally {
+    document.getElementById('detail_buttons').innerHTML
+    = '<button class="button button--outline" onclick="nav.popPage()">戻る</button> &nbsp;'
+    + '<button class="button button--outline" onclick="nav.pushPage(\'edit_money.html\', {animation : \'slide\', onTransitionEnd: function() '
+    + '{'
+    +    'displayEdit(' + i + ');'
+    + '}})">編集</button>';
+  }
 }
 function displayDetail_thing(i)
 {
   document.getElementById('detail_title'    ).innerHTML = gNmlist2[i].title;
   document.getElementById('detail_value'    ).innerHTML = getShort(gNmlist2[i].value);
-  document.getElementById('detail_reg_date' ).innerHTML = gNmlist2[i].reg_date.toLocaleString();
-  document.getElementById('detail_upd_date' ).innerHTML = gNmlist2[i].upd_date.toLocaleString();
+  document.getElementById('detail_reg_date' ).innerHTML = getDateString(gNmlist2[i].reg_date);
+  document.getElementById('detail_upd_date' ).innerHTML = getDateString(gNmlist2[i].upd_date);
+}
+
+
+/*--------------------------------------
+  displayEdit
+---------------------------------------*/
+function displayEdit(i)
+{
+  var short = getShortAndUnit(gNmlist1[i].value);
+
+  document.getElementById('edit_title').value = gNmlist1[i].title;
+  document.getElementById('edit_value').value = short.value;
+  document.getElementById('edit_rate' ).value = gNmlist1[i].rate;
+
+  if (short.unit == 'cho') { document.getElementById('edit_subunit_cho').checked = true; }
+  if (short.unit == 'oku') { document.getElementById('edit_subunit_oku').checked = true; }
+  if (short.unit == 'man') { document.getElementById('edit_subunit_man').checked = true; }
+
+  document.getElementById('edit_unit_jpy').checked = true;
+
+  document.getElementById('edit_note').value = gNmlist1[i].note;
+
+  document.getElementById('edit_buttons').innerHTML
+  = '<button class="button button--outline" onclick="nav.popPage()">戻る</button> &nbsp;'
+  + '<button class="button button--outline" onclick="saveChange(' + i + ')">保存</button>';
+}
+
+/*--------------------------------------
+  saveChange
+---------------------------------------*/
+function saveChange(i)
+{
+  if (document.getElementById('edit_title').value == "" ||
+      document.getElementById('edit_value').value == "" ||
+      document.getElementById('edit_rate' ).value  == "")
+  {
+    alert('名称・金額・為替をすべて入力してください。');
+    return;
+  }
+
+  gNmlist1[i].title    = document.getElementById('edit_title').value;
+  gNmlist1[i].rate     = document.getElementById('edit_rate' ).value;
+  gNmlist1[i].note     = document.getElementById('edit_note' ).value;
+  gNmlist1[i].reg_date = gNmlist1[i].reg_date;
+  gNmlist1[i].upd_date = new Date().getTime();
+
+  var value = multiplyBySubunit(document.getElementById('edit_value').value, 'edit');
+  if (document.getElementById('edit_unit_jpy').checked)
+  {
+    value = value;
+  }
+  else if (document.getElementById('edit_unit_usd').checked)
+  {
+    value = value * gNmlist1[i].rate;
+  }
+  gNmlist1[i].value = value;
+
+  // ソート
+  sortNmlist();
+
+  // 保存
+  saveLocalStorage();
+
+  displayDetail(i);
+  displayNmlist();
 }
 
 /*--------------------------------------
@@ -332,17 +416,17 @@ function getShort(value)
 
   if (document.getElementById('op_toTbl').checked)
   {
-    if      (value > 1000000000000) { short = value / 1000000000000; unit = ' Tri'; }
-    else if (value >    1000000000) { short = value /    1000000000; unit = ' Bil'; }
-    else if (value >       1000000) { short = value /       1000000; unit = ' Mil'; }
-    else                            { short = value /             1; unit =    ''; }
+    if      (value >= 1000000000000) { short = value / 1000000000000; unit = ' Tri'; }
+    else if (value >=    1000000000) { short = value /    1000000000; unit = ' Bil'; }
+    else if (value >=       1000000) { short = value /       1000000; unit = ' Mil'; }
+    else                             { short = value /             1; unit =    ''; }
   }
   else
   {
-    if      (value > 1000000000000) { short = value / 1000000000000; unit = '兆'; }
-    else if (value >     100000000) { short = value /     100000000; unit = '億'; }
-    else if (value >         10000) { short = value /         10000; unit = '万'; }
-    else                            { short = value /             1; unit =   ''; }
+    if      (value >= 1000000000000) { short = value / 1000000000000; unit = '兆'; }
+    else if (value >=     100000000) { short = value /     100000000; unit = '億'; }
+    else if (value >=         10000) { short = value /         10000; unit = '万'; }
+    else                             { short = value /             1; unit =   ''; }
   }
 
   var pow = Math.pow(10 , 1);
@@ -358,6 +442,33 @@ function getShort(value)
 
   return short + unit;
 }
+
+function getShortAndUnit(value)
+{
+  var short, unit;
+
+  if      (value >= 1000000000000) { short = value / 1000000000000; unit = 'cho'; }
+  else if (value >=     100000000) { short = value /     100000000; unit = 'oku'; }
+  else if (value >=         10000) { short = value /         10000; unit = 'man'; }
+  else                             { short = value /             1; unit =   ''; }
+
+  var pow = Math.pow(10 , 1);
+  short = Math.round(short * pow ) / pow;
+
+  if      (short >= 10000) { pow = Math.pow(10 , -3); }
+  else if (short >=  1000) { pow = Math.pow(10 , -2); }
+  else if (short >=   100) { pow = Math.pow(10 , -1); }
+  else if (short >=    10) { pow = Math.pow(10 ,  0); }
+  else if (short >=     1) { pow = Math.pow(10 ,  1); }
+
+  short = Math.round(short * pow ) / pow;
+
+  return {
+    'value': short,
+    'unit' : unit
+  };
+}
+
 
 /*--------------------------------------
   refer
@@ -381,12 +492,12 @@ function refer_money()
     "title"    : document.getElementById('in_title').value,
     "value"    : 0,
     "rate"     : document.getElementById('in_rate').value,
-    "reg_date" : new Date(),
-    "upd_date" : new Date(),
+    "reg_date" : new Date().getTime(),
+    "upd_date" : new Date().getTime(),
     "isEntered": true
   }
 
-  var value = multiplyBySubunit(document.getElementById('in_value').value);
+  var value = multiplyBySubunit(document.getElementById('in_value').value, 'in');
   if (document.getElementById('in_unit_jpy').checked)
   {
     entry.value = value;
@@ -418,9 +529,9 @@ function refer_thing()
 
   var entry = {
     "title"    : document.getElementById('in_title').value,
-    "value"    : multiplyBySubunit(document.getElementById('in_value').value),
-    "reg_date" : new Date(),
-    "upd_date" : new Date(),
+    "value"    : multiplyBySubunit(document.getElementById('in_value').value, 'in'),
+    "reg_date" : new Date().getTime(),
+    "upd_date" : new Date().getTime(),
     "isEntered": true
   }
 
@@ -440,21 +551,21 @@ function refer_thing()
   multiplyBySubunit
   サブ単位なしの裸の数字を取得する
 ---------------------------------------*/
-function multiplyBySubunit(value)
+function multiplyBySubunit(value, prefix)
 {
   // _マネー
   if (tab.getActiveTabIndex() == TAB_MONEY)
   {
-    if      (document.getElementById('in_subunit_han').checked) { return value *     1000000; }
-    else if (document.getElementById('in_subunit_sen').checked) { return value *        1000; }
+    if      (document.getElementById(prefix + '_subunit_han').checked) { return value *     1000000; }
+    else if (document.getElementById(prefix + '_subunit_sen').checked) { return value *        1000; }
   }
 
-  if      (document.getElementById('in_subunit_cho').checked) { return value * 1000000000000; }
-  else if (document.getElementById('in_subunit_oku').checked) { return value *     100000000; }
-  else if (document.getElementById('in_subunit_man').checked) { return value *         10000; }
-  else if (document.getElementById('in_subunit_tri').checked) { return value * 1000000000000; }
-  else if (document.getElementById('in_subunit_bil').checked) { return value *    1000000000; }
-  else if (document.getElementById('in_subunit_mil').checked) { return value *       1000000; }
+  if      (document.getElementById(prefix + '_subunit_cho').checked) { return value * 1000000000000; }
+  else if (document.getElementById(prefix + '_subunit_oku').checked) { return value *     100000000; }
+  else if (document.getElementById(prefix + '_subunit_man').checked) { return value *         10000; }
+  else if (document.getElementById(prefix + '_subunit_tri').checked) { return value * 1000000000000; }
+  else if (document.getElementById(prefix + '_subunit_bil').checked) { return value *    1000000000; }
+  else if (document.getElementById(prefix + '_subunit_mil').checked) { return value *       1000000; }
 }
 
 /*--------------------------------------
@@ -705,4 +816,26 @@ function saveSampleNmlist_thing()
 {
   var str = JSON.stringify(gSamples2);
   localStorage.setItem('nmlist2', str);
+}
+
+/*--------------------------------------
+  getDateString
+---------------------------------------*/
+function getDateString(time)
+{
+  var date = new Date(time);
+  var y = date.getFullYear();
+  var m = date.getMonth() + 1;
+  var d = date.getDate();
+  var w = date.getDay();
+  var h = date.getHours();
+  var n = date.getMinutes();
+  var wNames = ['日', '月', '火', '水', '木', '金', '土'];
+
+  m = ('0' + m).slice(-2);
+  d = ('0' + d).slice(-2);
+  h = ('0' + h).slice(-2);
+  n = ('0' + n).slice(-2);
+
+  return y + '年 ' + m + '月 ' + d + '日 (' + wNames[w] + ') ' + h + ':' + n;
 }
